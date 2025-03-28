@@ -7,35 +7,25 @@ class Categoria(models.Model):
     return self.nome
   
 class Cartao(models.Model):
-    CARTAO_CHOICES = [
-        ('debito', 'Débito'),
+    TIPOS_CARTAO = [
         ('credito', 'Crédito'),
+        ('debito', 'Débito'),
     ]
-    
-    nome = models.CharField(max_length=100, unique=True)
-    tipo = models.CharField(max_length=7, choices=CARTAO_CHOICES)  # Débito ou Crédito
-    limite = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Apenas para crédito
-    saldo = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Apenas para débito
+
+    nome = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=10, choices=TIPOS_CARTAO)
+    limite = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    saldo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.tipo == 'credito':
+            self.saldo = None  # Crédito não tem saldo
+        elif self.tipo == 'debito':
+            self.limite = None  # Débito não tem limite
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.nome} ({self.get_tipo_display()})"
-
-    def atualizar_saldo(self, valor, tipo_transacao):
-        """Atualiza o saldo com base na transação (entrada ou saída)"""
-        if self.tipo == 'debito':
-            if tipo_transacao == 'saida':  # Só pode sair do débito
-                if self.saldo >= valor:
-                    self.saldo -= valor
-                else:
-                    raise ValueError("Saldo insuficiente para a transação de débito.")
-            elif tipo_transacao == 'entrada':  # Entradas aumentam o saldo
-                self.saldo += valor
-        elif self.tipo == 'credito':
-            if tipo_transacao == 'saida':  # Saídas no crédito descontam do limite
-                if self.limite >= valor:
-                    self.limite -= valor
-                else:
-                    raise ValueError("Limite insuficiente para a transação de crédito.")
+        return f"{self.nome} ({self.tipo})"
 
   
 class Transacao(models.Model):

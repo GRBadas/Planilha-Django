@@ -8,5 +8,5 @@ router.register(r'categorias', CategoriaViewSet)
 router.register(r'transacoes', TransacaoViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),  # <- Deixe vazio para incluir tudo
 ]
