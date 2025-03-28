@@ -18,10 +18,34 @@ class TransacaoSerializer(serializers.ModelSerializer):
     categoria_nome = serializers.CharField(source='categoria.nome', read_only=True)
     cartao_nome = serializers.CharField(source='cartao.nome', read_only=True)
     
-    categoria = serializers.PrimaryKeyRelatedField(queryset=Categoria.objects.all())
-    cartao = serializers.PrimaryKeyRelatedField(queryset=Cartao.objects.all())
-
     class Meta:
         model = Transacao
         fields = '__all__'
+        extra_kwargs = {
+            'valor': {'required': True},
+            'data': {'required': True},
+            'tipo': {'required': True},
+            'categoria': {'required': True}
+        }
+
+    def validate(self, data):
+        """Validação adicional dos dados"""
+        if data.get('cartao') and data['cartao'].tipo == 'credito' and data.get('tipo') == 'entrada':
+            raise serializers.ValidationError("Cartão de crédito não aceita entradas")
+        return data
+
+    def create(self, validated_data):
+        """Cria a transação e atualiza o cartão"""
+        try:
+            transacao = Transacao.objects.create(**validated_data)
+            
+            if transacao.cartao:
+                transacao.cartao.registrar_transacao(
+                    valor=transacao.valor,
+                    tipo=transacao.tipo
+                )
+            
+            return transacao
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
 
