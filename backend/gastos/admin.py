@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from backend.gastos.models import Cartao, Categoria, Transacao
+from gastos.models import Cartao, Categoria, Transacao
 
 class CartaoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'tipo', 'limite', 'saldo')
