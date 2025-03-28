@@ -30,6 +30,7 @@ class Cartao(models.Model):
   
 class Transacao(models.Model):
     TIPO_CHOICES = [
+        ('entrada', 'Entrada'),
         ('saida', 'Saída'),
     ]
 
