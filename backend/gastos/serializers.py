@@ -35,16 +35,9 @@ class TransacaoSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        """Cria a transação e atualiza o cartão"""
         try:
+            # Apenas cria a transação
             transacao = Transacao.objects.create(**validated_data)
-            
-            if transacao.cartao:
-                transacao.cartao.registrar_transacao(
-                    valor=transacao.valor,
-                    tipo=transacao.tipo
-                )
-            
             return transacao
         except Exception as e:
             raise serializers.ValidationError(str(e))
