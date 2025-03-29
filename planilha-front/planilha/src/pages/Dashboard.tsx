@@ -3,6 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import NovaTransacao from '../components/NovaTransação';
 
+interface Cartao {
+  id: number;
+  nome: string;
+  tipo: 'credito' | 'debito';
+  saldo: number | null;
+  limite: number | null;
+}
+
 interface Transacao {
   id: number;
   descricao: string;
@@ -14,6 +22,13 @@ interface Transacao {
   cartao_nome?: string;
   categoria_nome?: string;
 }
+
+const formatarValor = (valor: number) => {
+  return valor.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+};
 
 const Dashboard = () => {
   const queryClient = useQueryClient();
@@ -29,6 +44,12 @@ const Dashboard = () => {
     }))
   });
 
+  // Busca cartões
+  const { data: cartoes } = useQuery({
+    queryKey: ['cartoes'],
+    queryFn: () => api.get('cartoes/').then(res => res.data)
+  });
+
   // Mutation para deletar
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`transacoes/${id}/`),
@@ -40,7 +61,7 @@ const Dashboard = () => {
 
   // Mutation para editar
   const updateMutation = useMutation({
-    mutationFn: (transacao: Transacao) => 
+    mutationFn: (transacao: Transacao) =>
       api.put(`transacoes/${transacao.id}/`, transacao),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transacoes'] });
@@ -62,19 +83,117 @@ const Dashboard = () => {
     }
   };
 
-  const formatarValor = (valor: number) => {
-    return valor.toLocaleString('pt-BR', { 
-      style: 'currency', 
-      currency: 'BRL' 
-    });
-  };
-
   return (
-    <div className="w-full">
+    <div className="w-full p-4">
       <h1 className="text-3xl font-semibold text-center mb-6 dark:text-violet-600">
         Painel Principal
       </h1>
-      
+
+      {/* Seção de Cartões */}
+      {/* Seção de Cartões com Scroll Horizontal */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-white">Seus Cartões</h2>
+          <div className="flex space-x-2">
+            <button
+              className="p-1 text-zinc-400 hover:text-white transition-colors"
+              onClick={() => {
+                const container = document.querySelector('.cards-container');
+                container?.scrollBy({ left: -300, behavior: 'smooth' });
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <button
+              className="p-1 text-zinc-400 hover:text-white transition-colors"
+              onClick={() => {
+                const container = document.querySelector('.cards-container');
+                container?.scrollBy({ left: 300, behavior: 'smooth' });
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="relative">
+          {/* Gradiente esquerdo */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-zinc-900 to-transparent pointer-events-none"></div>
+
+          {/* Container do scroll */}
+          <div className="cards-container overflow-x-auto scrollbar-hide pb-4">
+            <div className="flex space-x-4" style={{ minWidth: `${cartoes?.length * 320}px` }}>
+              {cartoes?.map((cartao: Cartao) => (
+                <div
+                  key={cartao.id}
+                  className={`flex-shrink-0 w-80 p-5 rounded-xl shadow-lg transition-all hover:scale-105 ${cartao.tipo === 'credito' ? 'bg-gradient-to-br from-blue-900 to-blue-800' : 'bg-gradient-to-br from-green-900 to-green-800'
+                    }`}
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <p className="text-xs text-zinc-300 mb-1">Cartão {cartao.tipo === 'credito' ? 'de Crédito' : 'de Débito'}</p>
+                      <h3 className="font-bold text-white text-lg">{cartao.nome}</h3>
+                    </div>
+                    <div className={`p-2 rounded-full ${cartao.tipo === 'credito' ? 'bg-blue-500/20' : 'bg-green-500/20'
+                      }`}>
+                      {cartao.tipo === 'credito' ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                          <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    {cartao.tipo === 'credito' ? (
+                      <>
+                        <p className="text-xs text-blue-300 mb-1">Limite disponível</p>
+                        <p className="text-2xl font-bold text-white">
+                          {formatarValor(cartao.limite || 0)}
+                        </p>
+                        <div className="mt-3 h-2 bg-blue-900/50 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-blue-400 rounded-full"
+                            style={{ width: '100%' }}
+                          ></div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs text-green-300 mb-1">Saldo disponível</p>
+                        <p className={`text-2xl font-bold ${(cartao.saldo || 0) >= 0 ? 'text-white' : 'text-red-300'
+                          }`}>
+                          {formatarValor(cartao.saldo || 0)}
+                        </p>
+                        <div className="mt-3 h-2 bg-green-900/50 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${(cartao.saldo || 0) >= 0 ? 'bg-green-400' : 'bg-red-400'
+                              }`}
+                            style={{ width: `${Math.min(100, Math.abs((cartao.saldo || 0) / 5000 * 100))}%` }}
+                          ></div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Gradiente direito */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-zinc-900 to-transparent pointer-events-none"></div>
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Formulário de Nova Transação */}
         <div className="lg:w-1/3">
@@ -169,7 +288,7 @@ const Dashboard = () => {
                   required
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Valor</label>
                 <input
