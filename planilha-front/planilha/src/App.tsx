@@ -1,26 +1,29 @@
 import React from 'react';
-import CartaoList from './components/CartaoList';
-import CategoriaList from './components/CategoriaList';
-import TransacaoList from './components/TransacaoList';
-import NovaTransacao from './components/NovaTransação';
-import Sidebar from './components/Sidebar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import CartoesPage from './pages/CartoesPage';
+import CategoriasPage from './pages/CategoriasPage';
+import TransacoesPage from './pages/TransacoesPage';
+
+// Crie uma instância do QueryClient
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
-    <div className="w-screen h-screen flex flex-col">
-    <Sidebar />
-    <div className="flex-1 bg-zinc-800 flex flex-col items-center p-4">
-      <h1 className="text-3xl font-semibold text-center dark:text-violet-600">
-        Gestão de Gastos
-      </h1>
-      <div className="mt-6 flex flex-wrap justify-center gap-4">
-        <NovaTransacao />
-        <CartaoList />
-        <CategoriaList />
-        <TransacaoList />
-      </div>
-    </div>
-  </div>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="cartoes" element={<CartoesPage />} />
+            <Route path="categorias" element={<CategoriasPage />} />
+            <Route path="transacoes" element={<TransacoesPage />} />
+          </Route>
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 };
 

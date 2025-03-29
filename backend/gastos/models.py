@@ -155,3 +155,37 @@ class Transacao(models.Model):
             if self.cartao.tipo == 'credito' and self.tipo == 'entrada':
                 raise ValueError("Não é permitido registrar entrada para cartões de crédito.")
             self.cartao.atualizar_saldo(self.valor, self.tipo)
+            
+    def delete(self, *args, **kwargs):
+        if self.cartao:
+            # Cartão de crédito - apenas saídas são permitidas
+            if self.cartao.tipo == 'credito':
+                if self.tipo == 'saida':
+                    # Reverte uma saída: adiciona de volta ao limite
+                    self.cartao.limite += self.valor
+                    self.cartao.save()
+            # Cartão de débito
+            else:
+                # Reverte o efeito da transação
+                if self.tipo == 'entrada':
+                    self.cartao.saldo -= self.valor  # Remove entrada
+                else:
+                    self.cartao.saldo += self.valor  # Devolve saída
+                self.cartao.save()
+    
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        """Atualiza saldo ao editar"""
+        if self.pk:  # Se já existe (edição)
+            old = Transacao.objects.get(pk=self.pk)
+            if old.cartao:
+                # Reverte transação antiga
+                if old.tipo == 'entrada':
+                    old.cartao.registrar_transacao(old.valor, 'saida')
+                else:
+                    old.cartao.registrar_transacao(old.valor, 'entrada')
+        super().save(*args, **kwargs)
+        if self.cartao:
+            # Aplica nova transação
+            self.cartao.registrar_transacao(self.valor, self.tipo)
