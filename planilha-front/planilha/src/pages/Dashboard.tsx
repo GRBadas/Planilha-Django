@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
+import GraficoCategorias from '../components/GraficoCategorias';
 
 interface Cartao {
   id: number;
@@ -248,7 +249,7 @@ const Dashboard = () => {
       </div>
 
       {/* Lista de Transações com Paginação */}
-      <div className="bg-zinc-800 p-6 rounded-lg shadow">
+      <div className="bg-zinc-900 p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4 text-zinc-200">
           Últimas Transações
         </h2>
@@ -312,6 +313,10 @@ const Dashboard = () => {
                 ))
               )}
             </div>
+
+            <div className='mt-20 w-full'>
+          <GraficoCategorias></GraficoCategorias>
+      </div>
 
             {/* Paginação */}
             {transacoesData?.totalPages && transacoesData.totalPages > 1 && (

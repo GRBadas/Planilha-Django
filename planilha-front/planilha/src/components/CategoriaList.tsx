@@ -1,10 +1,25 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import GraficoCategorias from './GraficoCategorias';
 
 interface Categoria {
   id: number;
   nome: string;
 }
+
+// Array de cores em gradiente para as categorias
+const categoryColors = [
+  'from-purple-500 to-purple-700',
+  'from-blue-500 to-blue-700',
+  'from-green-500 to-green-700',
+  'from-yellow-500 to-yellow-700',
+  'from-red-500 to-red-700',
+  'from-pink-500 to-pink-700',
+  'from-indigo-500 to-indigo-700',
+  'from-teal-500 to-teal-700',
+  'from-orange-500 to-orange-700',
+  'from-cyan-500 to-cyan-700'
+];
 
 const CategoriaList = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -12,7 +27,6 @@ const CategoriaList = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  // Busca categorias
   useEffect(() => {
     fetchCategorias();
   }, []);
@@ -26,7 +40,6 @@ const CategoriaList = () => {
     }
   };
 
-  // Manipuladores do CRUD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -65,76 +78,111 @@ const CategoriaList = () => {
     setShowForm(false);
   };
 
+  // Função para obter cor baseada no ID da categoria
+  const getCategoryColor = (id: number) => {
+    return categoryColors[id % categoryColors.length];
+  };
+
   return (
-    <div className='p-10'>
-      <div className="max-w-4xl mx-auto p-6 bg-zinc-700 rounded-lg shadow-md">
+    <div className="w-full p-4 bg-neutral-950 min-h-screen">
+      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-semibold text-center text-gray-300">Categorias</h2>
+          <h2 className="text-xl font-semibold text-zinc-200">Categorias</h2>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-colors"
           >
-            {showForm ? 'Cancelar' : 'Nova Categoria'}
+            {showForm ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancelar
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Nova Categoria
+              </>
+            )}
           </button>
         </div>
 
         {showForm && (
-          <form onSubmit={handleSubmit} className="mb-6 p-4 bg-zinc-600 rounded-lg">
+          <form onSubmit={handleSubmit} className="mb-8 p-6 bg-zinc-800 rounded-lg border border-zinc-700">
+            <h3 className="text-lg font-semibold mb-4 text-zinc-200">
+              {editingId ? 'Editar Categoria' : 'Nova Categoria'}
+            </h3>
             <div className="mb-4">
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-300 mb-2">
-                Nome da Categoria
-              </label>
+              <label className="block text-sm font-medium text-zinc-300 mb-1">Nome*</label>
               <input
                 type="text"
-                id="nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="w-full px-3 py-2 bg-zinc-500 text-white rounded"
+                className="w-full px-3 py-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500 border border-zinc-600"
                 required
               />
             </div>
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 bg-gray-500 text-white rounded"
+                className="px-4 py-2 bg-zinc-700 text-zinc-300 rounded hover:bg-zinc-600 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-500 transition-colors flex items-center gap-1"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
                 {editingId ? 'Atualizar' : 'Salvar'}
               </button>
             </div>
           </form>
         )}
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {categorias.map((categoria) => (
             <div
               key={categoria.id}
-              className="p-4 bg-zinc-600 rounded-lg shadow-sm flex justify-between items-center"
+              className={`bg-gradient-to-br ${getCategoryColor(categoria.id)} p-4 rounded-lg shadow-lg transition-all hover:scale-[1.02]`}
             >
-              <span className="text-lg font-semibold text-white">{categoria.nome}</span>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleEdit(categoria)}
-                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(categoria.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                  Excluir
-                </button>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-bold text-white">{categoria.nome}</h3>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(categoria)}
+                    className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
+                    title="Editar"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(categoria.id)}
+                    className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
+                    title="Excluir"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
+      </div>
+      <div className='mt-20 w-4/5 ml-50'>
+          <GraficoCategorias></GraficoCategorias>
       </div>
     </div>
   );
