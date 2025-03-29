@@ -85,9 +85,6 @@ const Dashboard = () => {
 
   return (
     <div className="w-full p-4">
-      <h1 className="text-3xl font-semibold text-center mb-6 dark:text-violet-600">
-        Painel Principal
-      </h1>
 
       {/* Seção de Cartões */}
       {/* Seção de Cartões com Scroll Horizontal */}
@@ -130,7 +127,7 @@ const Dashboard = () => {
               {cartoes?.map((cartao: Cartao) => (
                 <div
                   key={cartao.id}
-                  className={`flex-shrink-0 w-80 p-5 rounded-xl shadow-lg transition-all hover:scale-105 ${cartao.tipo === 'credito' ? 'bg-gradient-to-br from-blue-900 to-blue-800' : 'bg-gradient-to-br from-green-900 to-green-800'
+                  className={`flex-shrink-0 w-80 p-5 rounded-xl shadow-lg transition-all hover:scale-105 ${cartao.tipo === 'credito' ? 'bg-gradient-to-br from-violet-950 to-violet-800' : 'bg-gradient-to-br from-stone-900 to-stone-950'
                     }`}
                 >
                   <div className="flex justify-between items-start mb-6">
