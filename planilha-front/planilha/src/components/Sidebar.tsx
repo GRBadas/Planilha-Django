@@ -9,54 +9,72 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <header className="p-4 dark:bg-zinc-700">
-      <div className="container flex justify-between h-16 mx-auto">
+    <header className="bg-zinc-900 border-b border-zinc-800">
+      <div className="container flex justify-between items-center h-16 mx-auto px-4">
+        {/* Logo */}
         <Link 
           to="/"
           aria-label="Back to homepage" 
-          className="flex items-center p-2"
+          className="flex items-center p-2 group"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" className="w-8 h-8 dark:text-violet-600">
-            {/* Seu SVG aqui */}
-          </svg>
+          <div className="flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600">
+              FinanceApp
+            </span>
+          </div>
         </Link>
-        <ul className="items-stretch hidden space-x-3 md:flex">
-          <li className="flex">
-            <Link
-              to="/"
-              className={`flex items-center px-4 -mb-1 border-b-2 ${isActive('/') ? 'dark:text-violet-600 dark:border-violet-600' : 'dark:border-transparent'}`}
-            >
-              Dashboard
-            </Link>
-          </li>
-          <li className="flex">
-            <Link
-              to="/cartoes"
-              className={`flex items-center px-4 -mb-1 border-b-2 ${isActive('/cartoes') ? 'dark:text-violet-600 dark:border-violet-600' : 'dark:border-transparent'}`}
-            >
-              Cartões
-            </Link>
-          </li>
-          <li className="flex">
-            <Link
-              to="/categorias"
-              className={`flex items-center px-4 -mb-1 border-b-2 ${isActive('/categorias') ? 'dark:text-violet-600 dark:border-violet-600' : 'dark:border-transparent'}`}
-            >
-              Categorias
-            </Link>
-          </li>
-          <li className="flex">
-            <Link
-              to="/transacoes"
-              className={`flex items-center px-4 -mb-1 border-b-2 ${isActive('/transacoes') ? 'dark:text-violet-600 dark:border-violet-600' : 'dark:border-transparent'}`}
-            >
-              Transações
-            </Link>
-          </li>
-        </ul>
-        <button className="flex justify-end p-4 md:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+
+        {/* Links de navegação */}
+        <nav className="hidden md:flex items-center space-x-1">
+          <Link
+            to="/"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              isActive('/') 
+                ? 'bg-zinc-800 text-violet-400' 
+                : 'text-zinc-400 hover:text-violet-300 hover:bg-zinc-800/50'
+            }`}
+          >
+            Dashboard
+          </Link>
+          <Link
+            to="/cartoes"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              isActive('/cartoes') 
+                ? 'bg-zinc-800 text-violet-400' 
+                : 'text-zinc-400 hover:text-violet-300 hover:bg-zinc-800/50'
+            }`}
+          >
+            Cartões
+          </Link>
+          <Link
+            to="/categorias"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              isActive('/categorias') 
+                ? 'bg-zinc-800 text-violet-400' 
+                : 'text-zinc-400 hover:text-violet-300 hover:bg-zinc-800/50'
+            }`}
+          >
+            Categorias
+          </Link>
+          <Link
+            to="/transacoes"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              isActive('/transacoes') 
+                ? 'bg-zinc-800 text-violet-400' 
+                : 'text-zinc-400 hover:text-violet-300 hover:bg-zinc-800/50'
+            }`}
+          >
+            Transações
+          </Link>
+        </nav>
+
+        {/* Botão mobile */}
+        <button className="md:hidden p-2 rounded-md text-zinc-400 hover:text-violet-400 hover:bg-zinc-800 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
       </div>

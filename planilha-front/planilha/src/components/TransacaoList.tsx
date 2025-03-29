@@ -75,27 +75,26 @@ const TransacaoList = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-violet-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-100 text-red-700 rounded-lg">
+      <div className="p-4 bg-rose-900/30 text-rose-400 rounded-lg border border-rose-700">
         Erro ao carregar transações. Tente recarregar a página.
       </div>
     );
   }
 
   return (
-    <div className="w-full p-6">
-
-      <div className="bg-zinc-700 p-6 rounded-lg shadow-lg">
+    <div className="w-full p-4">
+      <div className="bg-zinc-800 p-6 rounded-lg shadow border border-zinc-700">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-white">Todas as Transações</h2>
-          <div className="text-zinc-300">
+          <h2 className="text-xl font-semibold text-zinc-200">Todas as Transações</h2>
+          <div className="text-sm text-zinc-400">
             Página {page} de {response?.totalPages || 1}
           </div>
         </div>
@@ -103,16 +102,22 @@ const TransacaoList = () => {
         {/* Lista de Transações */}
         <div className="space-y-3 mb-6">
           {response?.transacoes?.length === 0 ? (
-            <div className="p-4 bg-zinc-600 rounded-lg text-center text-zinc-300">
+            <div className="p-6 text-center text-zinc-400 bg-zinc-800/50 rounded-lg">
               Nenhuma transação encontrada
             </div>
           ) : (
             response?.transacoes?.map((transacao) => (
-              <div key={transacao.id} className="bg-zinc-600 p-4 rounded-lg hover:bg-zinc-500 transition-colors">
-                <div className="flex justify-between items-center">
+              <div 
+                key={transacao.id} 
+                className="bg-zinc-700/50 hover:bg-zinc-700 p-4 rounded-lg transition-colors border border-zinc-700"
+              >
+                <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-medium text-white">{transacao.descricao}</h3>
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <span className="text-xs text-zinc-400">
+                        {new Date(transacao.data).toLocaleDateString('pt-BR')}
+                      </span>
                       <span className="text-xs px-2 py-1 bg-zinc-700 rounded-full">
                         {transacao.categoria_nome}
                       </span>
@@ -121,21 +126,18 @@ const TransacaoList = () => {
                           {transacao.cartao_nome}
                         </span>
                       )}
-                      <span className="text-xs text-zinc-400">
-                        {new Date(transacao.data).toLocaleDateString('pt-BR')}
-                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-lg font-medium ${
-                      transacao.tipo === 'entrada' ? 'text-green-400' : 'text-red-400'
+                    <span className={`text-sm font-medium ${
+                      transacao.tipo === 'entrada' ? 'text-emerald-400' : 'text-rose-400'
                     }`}>
-                      {formatarValor(transacao.valor)}
+                      {transacao.tipo === 'entrada' ? '+' : '-'} {formatarValor(transacao.valor)}
                     </span>
                     <div className="flex gap-1">
                       <button
                         onClick={() => setEditingTransacao(transacao)}
-                        className="p-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+                        className="p-1 text-amber-400 hover:text-amber-300 transition-colors"
                         title="Editar"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,7 +146,7 @@ const TransacaoList = () => {
                       </button>
                       <button
                         onClick={() => handleDelete(transacao.id)}
-                        className="p-2 text-red-400 hover:text-red-300 transition-colors"
+                        className="p-1 text-rose-400 hover:text-rose-300 transition-colors"
                         title="Excluir"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,7 +167,7 @@ const TransacaoList = () => {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 bg-zinc-600 rounded text-white disabled:opacity-50"
+              className="px-4 py-2 bg-zinc-700 rounded text-zinc-300 disabled:opacity-50 hover:bg-zinc-600 transition-colors"
             >
               Anterior
             </button>
@@ -181,10 +183,10 @@ const TransacaoList = () => {
                   <button
                     key={i}
                     onClick={() => setPage(pageNumber)}
-                    className={`w-10 h-10 rounded-full ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       page === pageNumber 
                         ? 'bg-violet-600 text-white' 
-                        : 'bg-zinc-600 text-white hover:bg-zinc-500'
+                        : 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
                     }`}
                   >
                     {pageNumber}
@@ -195,7 +197,7 @@ const TransacaoList = () => {
             <button
               onClick={() => setPage(p => p + 1)}
               disabled={page === response.totalPages}
-              className="px-4 py-2 bg-zinc-600 rounded text-white disabled:opacity-50"
+              className="px-4 py-2 bg-zinc-700 rounded text-zinc-300 disabled:opacity-50 hover:bg-zinc-600 transition-colors"
             >
               Próxima
             </button>
@@ -205,22 +207,24 @@ const TransacaoList = () => {
 
       {/* Modal de Edição */}
       {editingTransacao && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-800 p-6 rounded-lg w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-800 p-6 rounded-lg w-full max-w-md border border-zinc-700 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-white">Editar Transação</h3>
+              <h3 className="text-lg font-semibold text-zinc-200">Editar Transação</h3>
               <button
                 onClick={() => setEditingTransacao(null)}
                 className="text-zinc-400 hover:text-white"
               >
-                ✕
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
             
             <form onSubmit={handleUpdate}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">Descrição</label>
+                  <label className="block text-sm font-medium text-zinc-300 mb-1">Descrição*</label>
                   <input
                     type="text"
                     value={editingTransacao.descricao}
@@ -228,14 +232,14 @@ const TransacaoList = () => {
                       ...editingTransacao,
                       descricao: e.target.value
                     })}
-                    className="w-full p-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500"
+                    className="w-full px-3 py-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500 border border-zinc-600"
                     required
                   />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-1">Valor (R$)</label>
+                    <label className="block text-sm font-medium text-zinc-300 mb-1">Valor (R$)*</label>
                     <input
                       type="number"
                       step="0.01"
@@ -245,13 +249,13 @@ const TransacaoList = () => {
                         ...editingTransacao,
                         valor: parseFloat(e.target.value) || 0
                       })}
-                      className="w-full p-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500"
+                      className="w-full px-3 py-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500 border border-zinc-600"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-1">Data</label>
+                    <label className="block text-sm font-medium text-zinc-300 mb-1">Data*</label>
                     <input
                       type="date"
                       value={editingTransacao.data}
@@ -259,7 +263,7 @@ const TransacaoList = () => {
                         ...editingTransacao,
                         data: e.target.value
                       })}
-                      className="w-full p-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500"
+                      className="w-full px-3 py-2 bg-zinc-700 rounded text-white focus:ring-2 focus:ring-violet-500 border border-zinc-600"
                       required
                     />
                   </div>
@@ -270,20 +274,31 @@ const TransacaoList = () => {
                 <button
                   type="button"
                   onClick={() => setEditingTransacao(null)}
-                  className="px-4 py-2 bg-zinc-600 text-white rounded hover:bg-zinc-500"
+                  className="px-4 py-2 bg-zinc-700 text-zinc-300 rounded hover:bg-zinc-600 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-500 flex items-center gap-1"
+                  className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-500 transition-colors flex items-center gap-1"
                   disabled={updateMutation.isLoading}
                 >
                   {updateMutation.isLoading ? (
                     <>
-                      <span className="animate-spin">↻</span> Salvando...
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Salvando...
                     </>
-                  ) : 'Salvar'}
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Salvar
+                    </>
+                  )}
                 </button>
               </div>
             </form>
